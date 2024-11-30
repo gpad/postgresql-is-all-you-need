@@ -24,9 +24,32 @@ CREATE TABLE public.messages (
 
 -- TRIGGERS --
 
-CREATE or replace TRIGGER notify_new_message AFTER
+CREATE OR REPLACE TRIGGER notify_new_message AFTER
 INSERT
     ON
     public.messages FOR EACH ROW EXECUTE FUNCTION notify_new_message();
 
 -- EXAMPLE DATA --
+
+/*
+
+start multiple instances: psql -h 127.0.0.1 example -U postgres
+LISTEN messages_channel;
+
+*/
+
+TRUNCATE public.messages RESTART identity;
+   
+INSERT INTO public.messages ("type", "content") VALUES('do-job-1', '{"a": 1}');
+INSERT INTO public.messages ("type", "content") VALUES('do-job-2', '{"a": 1}');
+INSERT INTO public.messages ("type", "content") VALUES('do-job-3', '{"a": 1}');
+INSERT INTO public.messages ("type", "content") VALUES('do-job-4', '{"a": 1}');
+
+SELECT * FROM messages;
+
+BEGIN;
+SELECT * FROM messages ORDER BY seq LIMIT 1 FOR UPDATE SKIP LOCKED;
+DELETE FROM messages WHERE id = '';
+COMMIT;
+
+SELECT * FROM messages;
