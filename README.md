@@ -1,5 +1,7 @@
 # PostgreSQL is all you need
 
+<img src="./header.webp" />
+
 ## Example 1
 
 CDC - Event Sourcing
