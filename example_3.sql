@@ -10,6 +10,13 @@ CREATE TABLE executed_tasks (
 
 -- EXAMPLE DATA --
 
+/*
+
+start multiple instances: psql -h 127.0.0.1 example -U postgres
+
+*/
+
+
 TRUNCATE executed_tasks RESTART IDENTITY;
 
 INSERT INTO executed_tasks ("name", start_at, completed_at) 

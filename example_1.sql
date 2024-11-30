@@ -82,7 +82,7 @@ INSERT
 
 /*
 
-start: psql -h 127.0.0.1 example -U postgres
+start multiple instances: psql -h 127.0.0.1 example -U postgres
 LISTEN events_notifications;
 
 */
