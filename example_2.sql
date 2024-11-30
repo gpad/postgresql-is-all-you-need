@@ -1,6 +1,6 @@
 -- FUNCTIONS --
 
-CREATE OR REPLACE FUNCTION public.notify_new_message()
+CREATE OR REPLACE FUNCTION notify_new_message()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -13,9 +13,9 @@ AS $function$
 
 -- TABLES --
 
-DROP TABLE IF EXISTS public.messages;
+DROP TABLE IF EXISTS messages;
 
-CREATE TABLE public.messages (
+CREATE TABLE messages (
 	id uuid NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
 	seq bigserial NOT NULL,
 	"type" text NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE public.messages (
 CREATE OR REPLACE TRIGGER notify_new_message AFTER
 INSERT
     ON
-    public.messages FOR EACH ROW EXECUTE FUNCTION notify_new_message();
+    messages FOR EACH ROW EXECUTE FUNCTION notify_new_message();
 
 -- EXAMPLE DATA --
 
@@ -38,12 +38,12 @@ LISTEN messages_channel;
 
 */
 
-TRUNCATE public.messages RESTART identity;
+TRUNCATE messages RESTART identity;
    
-INSERT INTO public.messages ("type", "content") VALUES('do-job-1', '{"a": 1}');
-INSERT INTO public.messages ("type", "content") VALUES('do-job-2', '{"a": 1}');
-INSERT INTO public.messages ("type", "content") VALUES('do-job-3', '{"a": 1}');
-INSERT INTO public.messages ("type", "content") VALUES('do-job-4', '{"a": 1}');
+INSERT INTO messages ("type", "content") VALUES('do-job-1', '{"a": 1}');
+INSERT INTO messages ("type", "content") VALUES('do-job-2', '{"a": 1}');
+INSERT INTO messages ("type", "content") VALUES('do-job-3', '{"a": 1}');
+INSERT INTO messages ("type", "content") VALUES('do-job-4', '{"a": 1}');
 
 SELECT * FROM messages;
 

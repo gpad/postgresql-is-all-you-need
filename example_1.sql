@@ -1,6 +1,6 @@
 -- FUNCTIONS --
 
-CREATE OR REPLACE FUNCTION public.notify_change()
+CREATE OR REPLACE FUNCTION notify_change()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -12,7 +12,7 @@ AS $function$
 ;
 
 
-CREATE OR REPLACE FUNCTION public.save_history_event()
+CREATE OR REPLACE FUNCTION save_history_event()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
@@ -36,7 +36,7 @@ AS $function$
 
 -- TYPES --
 
-CREATE TYPE public."history_events_action" AS ENUM ('INSERT', 'UPDATE', 'DELETE');
+CREATE TYPE "history_events_action" AS ENUM ('INSERT', 'UPDATE', 'DELETE');
 
 -- TABLES --
 
@@ -52,10 +52,10 @@ CREATE TABLE "StrangeTable2" (
   "value2" timestamp NOT NULL
 );
 
-CREATE TABLE public.history_events (
+CREATE TABLE history_events (
 	id uuid NOT NULL,
 	table_name text NOT NULL,
-	action_name public."history_events_action" NOT NULL,
+	action_name "history_events_action" NOT NULL,
 	external_id text NOT NULL,
 	created_at timestamptz DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	seq serial4 NOT NULL,
@@ -65,17 +65,17 @@ CREATE TABLE public.history_events (
 -- TRIGGERS --
 
 CREATE OR REPLACE TRIGGER save_history_events AFTER INSERT OR DELETE OR UPDATE
-ON public."StrangeTable1"
+ON "StrangeTable1"
 FOR EACH ROW EXECUTE FUNCTION save_history_event('StrangeTable1Pk');
 
 CREATE OR REPLACE TRIGGER save_history_events AFTER INSERT OR DELETE OR UPDATE
-ON public."StrangeTable2"
+ON "StrangeTable2"
 FOR EACH ROW EXECUTE FUNCTION save_history_event('StrangeTable2Pk');
 
 CREATE OR REPLACE TRIGGER trigger_notify_change AFTER
 INSERT
     ON
-    public.history_events FOR EACH ROW EXECUTE FUNCTION notify_change();
+    history_events FOR EACH ROW EXECUTE FUNCTION notify_change();
 
    
 -- EXAMPLE DATA --
@@ -87,9 +87,9 @@ LISTEN events_notifications;
 
 */
 
-TRUNCATE TABLE "StrangeTable1" RESTART IDENTITY;;
-TRUNCATE TABLE "StrangeTable2" RESTART IDENTITY;;
-TRUNCATE TABLE "history_events" RESTART IDENTITY;;
+TRUNCATE TABLE "StrangeTable1" RESTART IDENTITY;
+TRUNCATE TABLE "StrangeTable2" RESTART IDENTITY;
+TRUNCATE TABLE "history_events" RESTART IDENTITY;
 
 INSERT INTO "StrangeTable1" ("value1", "value2") VALUES ('value1', 1);
 INSERT INTO "StrangeTable1" ("value1", "value2") VALUES ('value2', 2);
