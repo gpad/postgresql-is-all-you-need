@@ -4,11 +4,11 @@ CREATE OR REPLACE FUNCTION notify_new_message()
  RETURNS trigger
  LANGUAGE plpgsql
 AS $function$
-    BEGIN
-      PERFORM pg_notify('messages_channel',to_json(new)::text);
-      return new;
-    END;
-      $function$
+  BEGIN
+    PERFORM pg_notify('messages_channel',to_json(new)::text);
+    return new;
+  END;
+  $function$
 ;
 
 -- TABLES --
@@ -49,6 +49,9 @@ SELECT * FROM messages;
 
 BEGIN;
 SELECT * FROM messages ORDER BY seq LIMIT 1 FOR UPDATE SKIP LOCKED;
+
+-- GENERATE PDF ...
+
 DELETE FROM messages WHERE id = '';
 COMMIT;
 

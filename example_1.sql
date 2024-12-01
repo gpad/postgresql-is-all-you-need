@@ -13,25 +13,23 @@ AS $function$
 
 
 CREATE OR REPLACE FUNCTION save_history_event()
- RETURNS trigger
- LANGUAGE plpgsql
+  RETURNS trigger
+  LANGUAGE plpgsql
 AS $function$
-    DECLARE
-      pk_column VARCHAR;
-      pk_val    TEXT;
-    BEGIN
-      pk_column := TG_ARGV[0];
-      IF (TG_OP = 'DELETE') THEN 
-            pk_val := row_to_json(OLD)->>pk_column;  
-      ELSIF (TG_OP = 'UPDATE') then
-            pk_val := row_to_json(NEW)->>pk_column;  
-      ELSIF (TG_OP = 'INSERT') THEN
-            pk_val := row_to_json(NEW)->>pk_column;  
-      END IF;
-      execute format('INSERT INTO history_events (id, table_name, action_name, external_id) values (gen_random_uuid(), %L, %L, %L)', TG_TABLE_NAME, TG_OP, pk_val);
-      RETURN NULL; -- result is ignored since this is an AFTER trigger
+  DECLARE
+    pk_column VARCHAR;
+    pk_val    TEXT;
+  BEGIN
+    pk_column := TG_ARGV[0];
+    pk_val := CASE
+      WHEN TG_OP = 'DELETE' THEN row_to_json(OLD)->>pk_column
+      WHEN TG_OP = 'UPDATE' THEN row_to_json(NEW)->>pk_column
+      WHEN TG_OP = 'INSERT' THEN row_to_json(NEW)->>pk_column
     END;
-    $function$
+    execute format('INSERT INTO history_events (id, table_name, action_name, external_id) values (gen_random_uuid(), %L, %L, %L)', TG_TABLE_NAME, TG_OP, pk_val);
+    RETURN NULL; -- result is ignored since this is an AFTER trigger
+  END;
+  $function$
 ;
 
 -- TYPES --
@@ -72,10 +70,9 @@ CREATE OR REPLACE TRIGGER save_history_events AFTER INSERT OR DELETE OR UPDATE
 ON "StrangeTable2"
 FOR EACH ROW EXECUTE FUNCTION save_history_event('StrangeTable2Pk');
 
-CREATE OR REPLACE TRIGGER trigger_notify_change AFTER
-INSERT
-    ON
-    history_events FOR EACH ROW EXECUTE FUNCTION notify_change();
+CREATE OR REPLACE TRIGGER trigger_notify_change AFTER INSERT
+ON history_events
+FOR EACH ROW EXECUTE FUNCTION notify_change();
 
    
 -- EXAMPLE DATA --

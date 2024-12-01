@@ -28,10 +28,16 @@ SELECT * FROM executed_tasks et ;
 
 SELECT hashtext('cronjob'), hashtext('good_morning');
 
+-- every instances
+
 SELECT 
-  pg_try_advisory_xact_lock(hashtext('cronjob'), hashtext('good_morning'))::boolean as lock_taken,
-  now() - COALESCE((SELECT max(completed_at) FROM	executed_tasks WHERE name = 'good_morning'), '2000-01-01') as elapsed
-;
+  pg_try_advisory_xact_lock(hashtext('cronjob'),
+  hashtext('good_morning'))::boolean as lock_taken,
+  now() - COALESCE((SELECT max(completed_at) 
+FROM
+  executed_tasks 
+WHERE
+  name = 'good_morning'), '2000-01-01') as elapsed;
 
 DO
 $do$
