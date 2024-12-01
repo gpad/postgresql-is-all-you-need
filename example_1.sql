@@ -72,10 +72,9 @@ CREATE OR REPLACE TRIGGER save_history_events AFTER INSERT OR DELETE OR UPDATE
 ON "StrangeTable2"
 FOR EACH ROW EXECUTE FUNCTION save_history_event('StrangeTable2Pk');
 
-CREATE OR REPLACE TRIGGER trigger_notify_change AFTER
-INSERT
-    ON
-    history_events FOR EACH ROW EXECUTE FUNCTION notify_change();
+CREATE OR REPLACE TRIGGER trigger_notify_change AFTER INSERT
+ON history_events
+FOR EACH ROW EXECUTE FUNCTION notify_change();
 
    
 -- EXAMPLE DATA --
